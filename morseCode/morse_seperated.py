@@ -1,68 +1,73 @@
 from EmulatorGUI import GPIO
+# import RPi.GPIO as GPIO
 from wordpress_xmlrpc import Client, WordPressPost
 from wordpress_xmlrpc.methods import options
-#import RPi.GPIO as GPIO
 import time
 import traceback
 import requests
 import threading
 
+CHARMAP = {' ': ' ',
+        'A': 'A',
+        'B': 'B',
+        'C': 'C',
+        'D': 'D',
+        'E': 'E',
+        'F': 'F',
+        'G': 'G',
+        'H': 'H',
+        'I': 'I',
+        'J': 'J',
+        'K': 'K',
+        'L': 'L',
+        'M': 'M',
+        'N': 'N',
+        'O': 'O',
+        'P': 'P',
+        'Q': 'Q',
+        'R': 'R',
+        'S': 'S',
+        'T': 'T',
+        'U': 'U',
+        'V': 'V',
+        'W': 'W',
+        'X': 'X',
+        'Y': 'Y',
+        'Z': 'Z'}
 
-MORSECODE = {' ': ' ',
-        "'": '.----.',
-        '(': '-.--.-',
-        ')': '-.--.-',
-        ',': '--..--',
-        '-': '-....-',
-        '.': '.-.-.-',
-        '/': '-..-.',
-        '0': '-----',
-        '1': '.----',
-        '2': '..---',
-        '3': '...--',
-        '4': '....-',
-        '5': '.....',
-        '6': '-....',
-        '7': '--...',
-        '8': '---..',
-        '9': '----.',
-        ':': '---...',
-        ';': '-.-.-.',
-        '?': '..--..',
-        'A': '.-',
-        'B': '-...',
-        'C': '-.-.',
-        'D': '-..',
-        'E': '.',
-        'F': '..-.',
-        'G': '--.',
-        'H': '....',
-        'I': '..',
-        'J': '.---',
-        'K': '-.-',
-        'L': '.-..',
-        'M': '--',
-        'N': '-.',
-        'O': '---',
-        'P': '.--.',
-        'Q': '--.-',
-        'R': '.-.',
-        'S': '...',
-        'T': '-',
-        'U': '..-',
-        'V': '...-',
-        'W': '.--',
-        'X': '-..-',
-        'Y': '-.--',
-        'Z': '--..',
-        '_': '..--.-'}
+PINMAP = {'A': 2,
+        'B': 2,
+        'C': 3,
+        'D': 4,
+        'E': 5,
+        'F': 6,
+        'G': 7,
+        'H': 8,
+        'I': 9,
+        'J': 10,
+        'K': 11,
+        'L': 12,
+        'M': 13,
+        'N': 14,
+        'O': 15,
+        'P': 16,
+        'Q': 17,
+        'R': 18,
+        'S': 19,
+        'T': 20,
+        'U': 21,
+        'V': 22,
+        'W': 23,
+        'X': 24,
+        'Y': 25,
+        'Z': 26}
 
 speed=1
-pinNum=7
 timeInterval=30
 outputString="Loading.."
 #GPIO.cleanup()
 GPIO.setmode(GPIO.BCM)
+# GPIO.setup(1,GPIO.OUT)
 GPIO.setup(2,GPIO.OUT)
 GPIO.setup(3,GPIO.OUT)
 GPIO.setup(4,GPIO.OUT)
@@ -70,39 +75,45 @@ GPIO.setup(5,GPIO.OUT)
 GPIO.setup(6,GPIO.OUT)
 GPIO.setup(7,GPIO.OUT)
 GPIO.setup(8,GPIO.OUT)
+GPIO.setup(9,GPIO.OUT)
+GPIO.setup(10,GPIO.OUT)
+GPIO.setup(11,GPIO.OUT)
+GPIO.setup(12,GPIO.OUT)
+GPIO.setup(13,GPIO.OUT)
+GPIO.setup(14,GPIO.OUT)
+GPIO.setup(15,GPIO.OUT)
+GPIO.setup(16,GPIO.OUT)
+GPIO.setup(17,GPIO.OUT)
+GPIO.setup(18,GPIO.OUT)
+GPIO.setup(19,GPIO.OUT)
+GPIO.setup(20,GPIO.OUT)
+GPIO.setup(21,GPIO.OUT)
+GPIO.setup(22,GPIO.OUT)
+GPIO.setup(23,GPIO.OUT)
+GPIO.setup(24,GPIO.OUT)
+GPIO.setup(25,GPIO.OUT)
+GPIO.setup(26,GPIO.OUT)
 
-def dot():
-        GPIO.output(pinNum,1)
-        time.sleep(0.2*speed)
-        GPIO.output(pinNum,0)
-        time.sleep(0.2*speed)
-
-def dash():
-        GPIO.output(pinNum,1)
-        time.sleep(0.5*speed)
-        GPIO.output(pinNum,0)
-        time.sleep(0.2*speed)
+def displayChar(symbol):
+        GPIO.output(PINMAP[symbol],1)
+        time.sleep(1)
+        GPIO.output(PINMAP[symbol],0)
 
 def callApi():
-        global speed
-        global pinNum
         global timeInterval
         # wp = Client('http://192.168.1.42/rpie/wordpress/xmlrpc.php', 'user', 'pass')
         # display_text = wp.call(options.GetOptions('python_button_clicked'))
         # pinNum = wp.call(options.GetOptions('pinNum'))
         # speed = wp.call(options.GetOptions('speed'))
         # timeInterval = wp.call(options.GetOptions('timeInterval'))
-        r = requests.get("http://192.168.1.42/rpie/wordpress/wp-json/rest/v1/get_python_message")
+        r = requests.get("http://192.168.1.42/rpie/wordpress/wordpress/wp-json/rest/v1/get_python_message")
+        # print (r)
         data = r.json()
         display_text = data["message"]
-        pinNum = data["output_pin"]
         timeInterval = data["time"]
-        speed = data["speed"]
         print ("")
         print ("API call successful to wordpress. New message to display is : ")
         print (display_text)
-        print ("pinNum : ",pinNum)
-        print ("speed :",speed)
         print ("timeInterval :",timeInterval)
         print ("----------------------------------------------------")
         return display_text
@@ -123,9 +134,7 @@ displaying_terminal_message = False
 
 try:
         while True:
-                    # outputString = input('Enter your text : ')
                     #outputString = 'Hello World';
-                    # print (user_input)
                     if user_input[0] is not None:
                             outputString = user_input[0];
                             displaying_terminal_message = True
@@ -136,14 +145,11 @@ try:
                             outputString = callApi();
 
                     for letter in outputString:
-                                    for symbol in MORSECODE[letter.upper()]:
-                                            if symbol == '-':
-                                                    dash()
-                                            elif symbol == '.':
-                                                    dot()
+                                            print (letter)
+                                            if letter is ' ':
+                                                    time.sleep(1)
                                             else:
-                                                    time.sleep(0.5*speed)
-                                    time.sleep(0.5*speed)
+                                                    displayChar(letter.upper())
                     
                     if user_input[0] is None:
                             print ("Now waiting for ",timeInterval," seconds for another call")
