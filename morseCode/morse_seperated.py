@@ -33,34 +33,52 @@ CHARMAP = {' ': ' ',
         'W': 'W',
         'X': 'X',
         'Y': 'Y',
-        'Z': 'Z'}
+        'Z': 'Z',
+        '#': 'HASHTAG ',
+        '@': 'AT ',
+        '$': 'DOLLAR ',
+        '&': 'AND ',
+        '*': 'STAR ',
+        '-': 'DASH ',
+        ',': 'COMMA ',
+        '.': 'PERIOD ',
+        '1': 'ONE ',
+        '2': 'TWO ',
+        '3': 'THREE ',
+        '4': 'FOUR ',
+        '5': 'FIVE ',
+        '6': 'SIX ',
+        '7': 'SEVEN ',
+        '8': 'EIGHT ',
+        '9': 'NINE ',
+        '0': 'ZERO '}
 
 PINMAP = {'A': 2,
-        'B': 2,
-        'C': 3,
-        'D': 4,
-        'E': 5,
-        'F': 6,
-        'G': 7,
-        'H': 8,
-        'I': 9,
-        'J': 10,
-        'K': 11,
-        'L': 12,
-        'M': 13,
-        'N': 14,
-        'O': 15,
-        'P': 16,
-        'Q': 17,
-        'R': 18,
-        'S': 19,
-        'T': 20,
-        'U': 21,
-        'V': 22,
-        'W': 23,
-        'X': 24,
-        'Y': 25,
-        'Z': 26}
+        'B': 3,
+        'C': 4,
+        'D': 5,
+        'E': 6,
+        'F': 7,
+        'G': 8,
+        'H': 9,
+        'I': 10,
+        'J': 11,
+        'K': 12,
+        'L': 13,
+        'M': 14,
+        'N': 15,
+        'O': 16,
+        'P': 17,
+        'Q': 18,
+        'R': 19,
+        'S': 20,
+        'T': 21,
+        'U': 22,
+        'V': 23,
+        'W': 24,
+        'X': 25,
+        'Y': 26,
+        'Z': 27}
 
 speed=1
 timeInterval=30
@@ -94,6 +112,8 @@ GPIO.setup(24,GPIO.OUT)
 GPIO.setup(25,GPIO.OUT)
 GPIO.setup(26,GPIO.OUT)
 
+# wp = Client('http://192.168.1.42/rpie/wordpress/xmlrpc.php', 'user', 'pass')
+
 def displayChar(symbol):
         GPIO.output(PINMAP[symbol],1)
         time.sleep(1)
@@ -101,12 +121,11 @@ def displayChar(symbol):
 
 def callApi():
         global timeInterval
-        # wp = Client('http://192.168.1.42/rpie/wordpress/xmlrpc.php', 'user', 'pass')
         # display_text = wp.call(options.GetOptions('python_button_clicked'))
         # pinNum = wp.call(options.GetOptions('pinNum'))
         # speed = wp.call(options.GetOptions('speed'))
         # timeInterval = wp.call(options.GetOptions('timeInterval'))
-        r = requests.get("http://192.168.1.42/rpie/wordpress/wordpress/wp-json/rest/v1/get_python_message")
+        r = requests.get("http://192.168.1.42/rpie/wordpress/wp-json/rest/v1/get_python_message")
         # print (r)
         data = r.json()
         display_text = data["message"]
@@ -140,16 +159,34 @@ try:
                             displaying_terminal_message = True
                             print ("Message overridden by terminal input : ",outputString)
                             print ("----------------------------------------------------")
+                            # Insert overridden message as a custom post in wordpress
+                            #messagePost = WordPressPost()
+                            #messagePost.post_type = 'rpie-message'
+                            #messagePost.title = 'Message overriden by Raspberry Pi terminal'
+                            #messagePost.content = outputString
+                            #messagePost.custom_fields = []
+                            #messagePost.custom_fields.append({
+                            #        'key': 'terminal_id',
+                            #        'value': '1'
+                            #})
+                            #messagePost.id = wp.call(posts.NewPost(messagePost))
+
+                            r = requests.post("http://192.168.1.42/rpie/wordpress/wp-json/rest/v1/add_message_post",{'message':outputString, 'terminal_id':'1'})
+                            # print (r)
                     else:
                             displaying_terminal_message = False
                             outputString = callApi();
 
                     for letter in outputString:
-                                            print (letter)
-                                            if letter is ' ':
+                            if letter.upper() in CHARMAP:
+                                    for symbol in CHARMAP[letter.upper()]:
+                                            print (symbol)
+                                            if symbol is ' ':
                                                     time.sleep(1)
                                             else:
-                                                    displayChar(letter.upper())
+                                                    displayChar(symbol)
+                            else:
+                                    print ("Character : ",letter.upper()," is not supproted.")
                     
                     if user_input[0] is None:
                             print ("Now waiting for ",timeInterval," seconds for another call")
