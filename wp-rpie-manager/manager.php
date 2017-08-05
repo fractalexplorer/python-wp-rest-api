@@ -67,14 +67,44 @@ add_action( 'wp_ajax_nopriv_post_call_for_python', 'post_call_for_python' );
 add_action( 'wp_ajax_post_call_for_python', 'post_call_for_python' );
 
 function post_call_for_python() {
-	update_option( 'python_button_clicked', $_POST['message'] );
-	update_option( 'python_button_time', $_POST['time'] );
-	update_option( 'python_button_output_pin', $_POST['output_pin'] );
-	update_option( 'python_button_speed', $_POST['speed'] );
-	update_option( 'twitter_fetch_hash_tag', $_POST['hashtag'] );
-	update_option( 'rpi_mode', $_POST['rpi_mode'] );
-	update_option( 'twitter_mode', $_POST['twitter_mode'] );
-	echo "Raspberry Pi settings saved successfully.";exit;
+	if (is_super_admin())
+	{
+		$mime_type = array( 'image/jpeg','image/png' );
+		$type = $_FILES["pinImage"]["type"];
+
+		foreach ($type as $key => $value) {
+			if($value){
+				if( !in_array($value, $mime_type) ){
+					echo 'Only .jpg, .jpeg, .png extension accepted.'; exit;
+				}	
+			}
+		}
+
+		$uploads = wp_upload_dir();
+		$UploadFolder = "/rpie/";
+		$file_data = json_decode(get_option('python_pin_uploads'),true);
+		
+		foreach($_FILES["pinImage"]["tmp_name"] as $key=>$tmp_name){
+			$temp = $_FILES["pinImage"]["tmp_name"][$key];
+			$name = $_FILES["pinImage"]["name"][$key];
+			if($name){
+				if(move_uploaded_file($temp,$uploads['basedir'].$UploadFolder.$name)){
+					$file_data[$key] = $name;	
+    			}	
+			}
+		}	
+		
+		update_option( 'python_pin_uploads', json_encode($file_data) );  	
+		update_option( 'python_button_clicked', $_POST['message'] );
+		update_option( 'python_button_time', $_POST['time'] );
+		update_option( 'python_button_output_pin', $_POST['output_pin'] );
+		update_option( 'python_button_speed', $_POST['speed'] );
+		update_option( 'twitter_fetch_hash_tag', $_POST['hashtag'] );
+		update_option( 'rpi_mode', $_POST['rpi_mode'] );
+		update_option( 'twitter_mode', $_POST['twitter_mode'] );
+
+		echo "Raspberry Pi settings saved successfully.";exit;
+	}
 }
 
 
