@@ -18,7 +18,7 @@ if($mode == "26_pin_mode" && $twitter_mode == "on")
 	<script type="text/javascript">
  	<?php 
  		echo 'var ajaxurl = "' . admin_url('admin-ajax.php') . '";';
- 		echo 'var twitter_last_message = "' . ($twitter_last_message ? addslashes($twitter_last_message) : "" ) .'";';
+ 		echo 'var twitter_last_message = "' . ($twitter_last_message ? addslashes( str_replace(array("\n","\r"), '', $twitter_last_message)) : "" ) .'";';
  		$uploads = wp_upload_dir();
 		$pin_images_url = $uploads['baseurl']."/rpie/";
 		$pinImages = get_option('python_pin_uploads');
@@ -47,6 +47,7 @@ if($mode == "26_pin_mode" && $twitter_mode == "on")
 					if(response.code=="0")
 					{
 						twitter_last_message = response.twitter_last_message;
+						twitter_last_updated_time = response.twitter_last_updated_time;
 						if(twitter_last_message!="")
 						{
 							jQuery(".twitter_message span").text(twitter_last_message);
@@ -63,6 +64,14 @@ if($mode == "26_pin_mode" && $twitter_mode == "on")
 								{
 									console.log("Character : "+charWise+" is not supproted.");
 								}
+							}
+							var skip_difference = twitter_last_updated_time - Math.floor(Date.now() / 1000);
+							if(skip_difference<0)
+							{
+								//1 seconds added from skip_difference for call and other time. Thrashhold
+								console.log(displayArray);
+								displayArray.splice(0, (skip_difference*-1)+1);
+								console.log(displayArray);
 							}
 							interval = setInterval(displayCharAsImage,1000);
 						}
@@ -96,7 +105,7 @@ if($mode == "26_pin_mode" && $twitter_mode == "on")
 				globalIndex = 0;
 				jQuery(".twitter_image").html("");
             	jQuery(".twitter_image_helper").html("");
-            	getTwitterMessage();
+            	setTimeout(getTwitterMessage,5000); // 5 Second time out
 			}
 		}
 	</script>

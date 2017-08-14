@@ -169,7 +169,8 @@ function get_twitter_message()
 	$twitter_last_message = get_option( 'twitter_last_message' );
 	$twitter_last_updated_time = get_option( 'twitter_last_updated_time' );
 	
-	$output['twitter_last_message'] = $twitter_last_message;
+	$output['twitter_last_message'] = addslashes( str_replace(array("\n","\r"), '', $twitter_last_message));
+	$output['twitter_last_updated_time'] = $twitter_last_updated_time;
 	echo json_encode($output);die;
 }
 
