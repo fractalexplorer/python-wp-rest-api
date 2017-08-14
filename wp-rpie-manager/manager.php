@@ -59,9 +59,11 @@ function set_rpie_template_page( $page_template )
     if ( is_page( 'manage-raspberry-pi' ) ) {
         $page_template = dirname( __FILE__ ) . '/rpie-template.php';
     }
+    if ( is_page( 'live-raspberry-pi' ) ) {
+        $page_template = dirname( __FILE__ ) . '/live-rpie-template.php';
+    }
     return $page_template;
 }
-
 
 add_action( 'wp_ajax_nopriv_post_call_for_python', 'post_call_for_python' );
 add_action( 'wp_ajax_post_call_for_python', 'post_call_for_python' );
@@ -99,9 +101,9 @@ function post_call_for_python() {
 		update_option( 'python_button_time', $_POST['time'] );
 		update_option( 'python_button_output_pin', $_POST['output_pin'] );
 		update_option( 'python_button_speed', $_POST['speed'] );
-		update_option( 'twitter_fetch_hash_tag', $_POST['hashtag'] );
+		update_option( 'twitter_fetch_hash_tag', $_POST['twitter_fetch_hash_tag'] );
 		update_option( 'rpi_mode', $_POST['rpi_mode'] );
-		update_option( 'twitter_mode', $_POST['twitter_mode'] );
+		update_option( 'twitter_mode', $_POST['twitter_mode'] == "on" ? "on" : "off" );
 
 		echo "Raspberry Pi settings saved successfully.";exit;
 	}
@@ -114,8 +116,12 @@ add_action( 'rest_api_init', function () {
     'callback' => 'get_python_message',
   ) );
   register_rest_route( 'rest/v1', '/add_message_post', array(
-    'methods' => 'PSOT',
+    'methods' => 'POST',
     'callback' => 'add_message_post',
+  ) );
+  register_rest_route( 'rest/v1', '/update_twitter_message', array(
+    'methods' => 'POST',
+    'callback' => 'update_twitter_message',
   ) );
 } );
 
@@ -133,9 +139,38 @@ function get_python_message( WP_REST_Request $request )
 	$output['twitter_mode'] = get_option( 'twitter_mode');
 	$output['rpi_mode'] = get_option( 'rpi_mode');
 	
-
 	$response = new WP_REST_Response( $output );
 	return $response;
+}
+
+function update_twitter_message( WP_REST_Request $request )
+{
+	$params = $request->get_params();
+	$output = array();
+	$output['code'] = "0";
+	
+	if(isset($params['twitter_last_message']) && !empty($params['twitter_last_message']))
+	{
+		$output['updated'] = true;
+		update_option( 'twitter_last_message', $params['twitter_last_message'] );
+		update_option( 'twitter_last_updated_time', time() );
+	}
+	$response = new WP_REST_Response( $output );
+	return $response;
+}
+
+add_action( 'wp_ajax_nopriv_get_twitter_message', 'get_twitter_message' );
+add_action( 'wp_ajax_get_twitter_message', 'get_twitter_message' );
+
+function get_twitter_message()
+{
+	$output = array();
+	$output['code'] = "0";
+	$twitter_last_message = get_option( 'twitter_last_message' );
+	$twitter_last_updated_time = get_option( 'twitter_last_updated_time' );
+	
+	$output['twitter_last_message'] = $twitter_last_message;
+	echo json_encode($output);die;
 }
 
 function add_message_post( WP_REST_Request $request )

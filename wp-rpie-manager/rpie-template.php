@@ -9,21 +9,21 @@ get_header();
 $mode = get_option( 'rpi_mode');
 $twitter_mode = get_option( 'twitter_mode');
 ?>
-<style>.rpie-wrapper{max-width:700px;width:100%;margin:20px auto;padding: 30px 0;}</style>
+<style>.rpie-wrapper{max-width:700px;width:100%;margin:20px auto;padding: 30px 0;}.pin_images img {height: 50px;width: auto;}</style>
 <div class="wrap rpie-wrapper">
 	<form id="raspberrypi" enctype="multipart/form-data" method="post">
 		<div id="primary" class="content-area">
 			<h3>Manage Your Raspberry Pi settings here : </h3>	
 			<label>Write your message :</label>
-			<input type="text" placeholder="Write your message here..." id="call_python_text" value="<?php echo get_option( 'python_button_clicked');?>"/>
+			<input type="text" placeholder="Write your message here..." id="call_python_text" name="message" value="<?php echo get_option( 'python_button_clicked');?>"/>
 			<label>Call interval time in seconds :</label>
-			<input type="text" placeholder="Call interval time in seconds..." id="call_python_time" value="<?php echo get_option( 'python_button_time');?>"/>
+			<input type="text" placeholder="Call interval time in seconds..." name="time" id="call_python_time" value="<?php echo get_option( 'python_button_time');?>"/>
 			<label>Output pin number :</label>
-			<input type="text" placeholder="Output pin number..." id="call_python_output_pin" value="<?php echo get_option( 'python_button_output_pin');?>"/>
+			<input type="text" placeholder="Output pin number..."  name="output_pin" id="call_python_output_pin" value="<?php echo get_option( 'python_button_output_pin');?>"/>
 			<label>Speed of displaying morse code :</label>
-			<input type="text" placeholder="Speed of displaying morse code..." id="call_python_speed" value="<?php echo get_option( 'python_button_speed');?>"/>
+			<input type="text" placeholder="Speed of displaying morse code..." name="speed" id="call_python_speed" value="<?php echo get_option( 'python_button_speed');?>"/>
 			<label>Twitter Hashtag to fetch feeds when Twitter mode is on (enter single hashtag without hash):</label>
-			<input type="text" placeholder="Twitter Hashtag to fetch feeds..." id="twitter_fetch_hash_tag" value="<?php echo get_option( 'twitter_fetch_hash_tag');?>"/>
+			<input type="text" placeholder="Twitter Hashtag to fetch feeds..." id="twitter_fetch_hash_tag" name="twitter_fetch_hash_tag" value="<?php echo get_option( 'twitter_fetch_hash_tag');?>"/>
 			<div>
 				<label>Raspberry Pi Mode:</label>
 				<label>
@@ -31,7 +31,7 @@ $twitter_mode = get_option( 'twitter_mode');
 					Single Pin Mode
 				</label>
 				<label>
-					<input type="radio" name="rpi_mode" id="mode_2" value="26_pin_mode" <?php echo ($mode == "26_pin_pin" ? "checked" : "");?> />
+					<input type="radio" name="rpi_mode" id="mode_2" value="26_pin_mode" <?php echo ($mode == "26_pin_mode" ? "checked" : "");?> />
 					26 Pin Mode
 				</label>
 			</div>

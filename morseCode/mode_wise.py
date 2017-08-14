@@ -171,6 +171,7 @@ GPIO.setup(23,GPIO.OUT)
 GPIO.setup(24,GPIO.OUT)
 GPIO.setup(25,GPIO.OUT)
 GPIO.setup(26,GPIO.OUT)
+GPIO.setup(27   ,GPIO.OUT)
 
 apiurl = "http://rpi.testplanets.com/"
 twitterObj = Twython(app_key=TWITTER_APP_KEY, 
@@ -280,6 +281,8 @@ try:
                             if twitter_mode == "on":
                                     print ("----------------------------------------------------")
                                     outputString = fetchFirstTweetFromHashtag()
+                                    r = requests.post(apiurl+"wp-json/rest/v1/update_twitter_message",{'twitter_last_message':outputString, 'terminal_id':'1'})
+                                    # print (r)
                     
 
                     if mode == "single_pin":
