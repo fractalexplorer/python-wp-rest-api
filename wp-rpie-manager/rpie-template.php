@@ -14,6 +14,8 @@ $twitter_mode = get_option( 'twitter_mode');
 	<form id="raspberrypi" enctype="multipart/form-data" method="post">
 		<div id="primary" class="content-area">
 			<h3>Manage Your Raspberry Pi settings here : </h3>	
+			<label>Please enter Live video streaming URL :</label>
+			<input type="text" placeholder="Live video stream url" id="live_video_stream_url" name="live_video_stream_url" value="<?php echo get_option( 'live_video_stream_url');?>"/>
 			<label>Write your message :</label>
 			<input type="text" placeholder="Write your message here..." id="call_python_text" name="message" value="<?php echo get_option( 'python_button_clicked');?>"/>
 			<label>Call interval time in seconds :</label>

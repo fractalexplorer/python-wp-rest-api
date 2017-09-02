@@ -103,6 +103,7 @@ function post_call_for_python() {
 		update_option( 'python_button_speed', $_POST['speed'] );
 		update_option( 'twitter_fetch_hash_tag', $_POST['twitter_fetch_hash_tag'] );
 		update_option( 'rpi_mode', $_POST['rpi_mode'] );
+		update_option( 'live_video_stream_url', $_POST['live_video_stream_url'] );
 		update_option( 'twitter_mode', $_POST['twitter_mode'] == "on" ? "on" : "off" );
 
 		echo "Raspberry Pi settings saved successfully.";exit;
