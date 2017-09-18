@@ -162,7 +162,7 @@ try:
                             # Insert overridden message as a custom post in wordpress
                             #messagePost = WordPressPost()
                             #messagePost.post_type = 'rpie-message'
-                            #messagePost.title = 'Message overriden by Raspberry Pi terminal'
+                            #messagePost.title = 'Message overridden by Raspberry Pi terminal'
                             #messagePost.content = outputString
                             #messagePost.custom_fields = []
                             #messagePost.custom_fields.append({
@@ -194,7 +194,7 @@ try:
                     
                     if displaying_terminal_message:
                             user_input[0] = None
-                            print ("User message overriden successfully, Now calling wordpress in 2 seconds")
+                            print ("User message overridden successfully, Now calling wordpress in 2 seconds")
                             time.sleep(2)
 
 except Exception as ex:

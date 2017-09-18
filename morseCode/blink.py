@@ -70,6 +70,7 @@ GPIO.setup(5,GPIO.OUT)
 GPIO.setup(6,GPIO.OUT)
 GPIO.setup(7,GPIO.OUT)
 GPIO.setup(8,GPIO.OUT)
+GPIO.setup(18,GPIO.OUT)
 
 def dot():
         GPIO.output(pinNum,1)

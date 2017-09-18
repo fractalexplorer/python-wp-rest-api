@@ -237,7 +237,9 @@ def fetchFirstTweetFromHashtag():
                 return ""
         for tweet in tweets:
                 print ("Fetching first tweet from twitter",tweet['text'])
-                return tweet['text']
+                tUrl = 'http://twitframe.com/show?url=https%3A%2F%2Ftwitter.com%2F'+ str(tweet['user']['screen_name']) +'%2Fstatus%2F'+ str(tweet['id'])
+                print (tUrl)
+                return {'text': tweet['text'], 'username': str(tweet['user']['screen_name']), 'id': str(tweet['id'])}
 
 # Declare a mutable object so that it can be pass via reference
 user_input = [None]
@@ -280,8 +282,9 @@ try:
                             outputString = callApi();
                             if twitter_mode == "on":
                                     print ("----------------------------------------------------")
-                                    outputString = fetchFirstTweetFromHashtag()
-                                    r = requests.post(apiurl+"wp-json/rest/v1/update_twitter_message",{'twitter_last_message':outputString, 'terminal_id':'1'})
+                                    twitterTweet = fetchFirstTweetFromHashtag()
+                                    outputString = twitterTweet['text']
+                                    r = requests.post(apiurl+"wp-json/rest/v1/update_twitter_message",{'twitter_last_message':outputString, 'username':twitterTweet['username'] , 'user_id':twitterTweet['id'] , 'terminal_id':'1'})
                                     # print (r)
                     
 

@@ -154,6 +154,9 @@ function update_twitter_message( WP_REST_Request $request )
 	{
 		$output['updated'] = true;
 		update_option( 'twitter_last_message', $params['twitter_last_message'] );
+		update_option( 'twitter_user', $params['username'] );
+		update_option( 'twitter_user_id', $params['user_id'] );
+		update_option( 'twitter_last_message', $params['twitter_last_message'] );
 		update_option( 'twitter_last_updated_time', time() );
 	}
 	$response = new WP_REST_Response( $output );
@@ -169,9 +172,13 @@ function get_twitter_message()
 	$output['code'] = "0";
 	$twitter_last_message = get_option( 'twitter_last_message' );
 	$twitter_last_updated_time = get_option( 'twitter_last_updated_time' );
+	$twitter_user = get_option( 'twitter_user' );
+	$twitter_user_id = get_option( 'twitter_user_id' );
 	
 	$output['twitter_last_message'] = addslashes( str_replace(array("\n","\r"), '', $twitter_last_message));
 	$output['twitter_last_updated_time'] = $twitter_last_updated_time;
+	$output['twitter_user'] = $twitter_user;
+	$output['twitter_user_id'] = $twitter_user_id;
 	echo json_encode($output);die;
 }
 
