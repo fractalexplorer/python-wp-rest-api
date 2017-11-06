@@ -62,8 +62,22 @@ function set_rpie_template_page( $page_template )
     if ( is_page( 'live-raspberry-pi' ) ) {
         $page_template = dirname( __FILE__ ) . '/live-rpie-template.php';
     }
+    
     return $page_template;
 }
+
+
+ add_filter('template_include', 'include_template_rpi_message_single');
+function include_template_rpi_message_single( $template ) {
+    $post_types = array('rpi-message');
+
+    if (is_singular($post_types)) {
+        $template = dirname( __FILE__ ) .'/single-rpi-message.php';
+    }
+
+    return $template;
+}
+
 
 add_action( 'wp_ajax_nopriv_post_call_for_python', 'post_call_for_python' );
 add_action( 'wp_ajax_post_call_for_python', 'post_call_for_python' );
@@ -82,15 +96,14 @@ function post_call_for_python() {
 			}
 		}
 
-		$uploads = wp_upload_dir();
-		$UploadFolder = "/rpie/";
+		$uploads = plugin_dir_path('rpie/',__FILE__ );
 		$file_data = json_decode(get_option('python_pin_uploads'),true);
 		
-		foreach($_FILES["pinImage"]["tmp_name"] as $key=>$tmp_name){
+		foreach($_FILES["pinImage"]["tmp_name"] as $key => $tmp_name){
 			$temp = $_FILES["pinImage"]["tmp_name"][$key];
 			$name = $_FILES["pinImage"]["name"][$key];
 			if($name){
-				if(move_uploaded_file($temp,$uploads['basedir'].$UploadFolder.$name)){
+				if(move_uploaded_file($temp,$uploads.$name)){
 					$file_data[$key] = $name;	
     			}	
 			}
@@ -120,6 +133,10 @@ add_action( 'rest_api_init', function () {
     'methods' => 'POST',
     'callback' => 'add_message_post',
   ) );
+  register_rest_route( 'rest/v1', '/add_twitter_post', array(
+    'methods' => 'POST',
+    'callback' => 'add_twitter_post',
+  ) );
   register_rest_route( 'rest/v1', '/update_twitter_message', array(
     'methods' => 'POST',
     'callback' => 'update_twitter_message',
@@ -141,6 +158,7 @@ function get_python_message( WP_REST_Request $request )
 	$output['rpi_mode'] = get_option( 'rpi_mode');
 	
 	$response = new WP_REST_Response( $output );
+	
 	return $response;
 }
 
@@ -191,7 +209,7 @@ function add_message_post( WP_REST_Request $request )
 
 	// Create post object
 	$my_post = array(
-		'post_title'    => 'Message overridden by Raspberry Pi terminal - '.$terminal_id,
+		'post_title'    => 'Twitter Message - '.$terminal_id,
 		'post_content'  => $content,
 		'post_status'   => 'publish',
 		'post_author'   => 1,
@@ -199,6 +217,38 @@ function add_message_post( WP_REST_Request $request )
 	// Insert the post into the database
 	$new_post_id = wp_insert_post( $my_post );
 	update_post_meta($new_post_id,'terminal_id',$terminal_id);
+
+	$output = array();
+	$output['code'] = "0";
+	$output['message'] = "success";
+	$output['id'] = $new_post_id;
+
+	$response = new WP_REST_Response( $output );
+	return $response;
+}
+
+function add_twitter_post( WP_REST_Request $request )
+{
+	$params = $request->get_params();
+	
+	$tweet = $params['tweet'];
+	$terminal_id = $params['terminal_id'];
+	$username = $params['username'];
+	$user_id = $params['id'];
+
+	// Create post object
+	$my_post = array(
+		'post_title'    => 'Twitter Message - '.$terminal_id,
+		'post_content'  => $tweet,
+		'post_status'   => 'publish',
+		'post_type'   => 'rpi-message',
+		'post_author'   => 1,
+	);
+	// Insert the post into the database
+	$new_post_id = wp_insert_post( $my_post );
+	update_post_meta($new_post_id,'terminal_id',$terminal_id);
+	update_post_meta($new_post_id,'twitter_username',$username);
+	update_post_meta($new_post_id,'twitter_user_id',$user_id);
 
 	$output = array();
 	$output['code'] = "0";

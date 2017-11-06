@@ -239,6 +239,7 @@ def fetchFirstTweetFromHashtag():
                 print ("Fetching first tweet from twitter",tweet['text'])
                 tUrl = 'http://twitframe.com/show?url=https%3A%2F%2Ftwitter.com%2F'+ str(tweet['user']['screen_name']) +'%2Fstatus%2F'+ str(tweet['id'])
                 print (tUrl)
+                r = requests.post(apiurl+"wp-json/rest/v1/add_twitter_post",{'tweet':tweet['text'], 'terminal_id':'1','username': str(tweet['user']['screen_name']), 'id': str(tweet['id'])})
                 return {'text': tweet['text'], 'username': str(tweet['user']['screen_name']), 'id': str(tweet['id'])}
 
 # Declare a mutable object so that it can be pass via reference
@@ -283,9 +284,10 @@ try:
                             if twitter_mode == "on":
                                     print ("----------------------------------------------------")
                                     twitterTweet = fetchFirstTweetFromHashtag()
-                                    outputString = twitterTweet['text']
-                                    r = requests.post(apiurl+"wp-json/rest/v1/update_twitter_message",{'twitter_last_message':outputString, 'username':twitterTweet['username'] , 'user_id':twitterTweet['id'] , 'terminal_id':'1'})
-                                    # print (r)
+                                    if twitterTweet != "":
+                                            outputString = twitterTweet['text']
+                                            r = requests.post(apiurl+"wp-json/rest/v1/update_twitter_message",{'twitter_last_message':outputString, 'username':twitterTweet['username'] , 'user_id':twitterTweet['id'] , 'terminal_id':'1'})
+                                            # print (r)
                     
 
                     if mode == "single_pin":

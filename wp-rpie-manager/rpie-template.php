@@ -47,8 +47,8 @@ $twitter_mode = get_option( 'twitter_mode');
 				<div class="pin_images_wrapper">
 				<?php
 					$characters = array(2 => "A", 3 => "B", 4 => "C", 5 => "D", 6 => "E", 7 => "F", 8 => "G", 9 => "H", 10 => "I", 11 => "J", 12 => "K", 13 => "L", 14 => "M", 15 => "N", 16 => "O", 17 => "P", 18 => "Q", 19 => "R", 20 => "S", 21 => "T", 22 => "U", 23 => "V", 24 => "W", 25 => "X", 26 => "Y", 27 => "Z");
-					$uploads = wp_upload_dir();
-					$pin_images_url = $uploads['baseurl']."/rpie/";
+					
+					$pin_images_url = plugins_url('rpie/',__FILE__ );
 					$pin_images_path = str_replace($uploads['subdir'], "", $uploads['path']."/rpie/");
 
 					$pinImages = json_decode(get_option('python_pin_uploads'),true);

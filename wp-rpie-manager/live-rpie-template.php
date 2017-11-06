@@ -1,7 +1,6 @@
 <?php
 /* Template Name: Rpie */
 get_header(); 
-
 $live_video_stream_url = get_option( 'live_video_stream_url');
 $mode = get_option( 'rpi_mode');
 $twitter_mode = get_option( 'twitter_mode');
@@ -26,8 +25,8 @@ if($mode == "26_pin_mode" && $twitter_mode == "on")
  	<?php 
  		echo 'var ajaxurl = "' . admin_url('admin-ajax.php') . '";';
  		echo 'var twitter_last_message = "' . ($twitter_last_message ? addslashes( str_replace(array("\n","\r"), '', $twitter_last_message)) : "" ) .'";';
- 		$uploads = wp_upload_dir();
-		$pin_images_url = $uploads['baseurl']."/rpie/";
+ 		
+		$pin_images_url = plugins_url('rpie/',__FILE__ );
 		$pinImages = get_option('python_pin_uploads');
  		echo 'var pin_images_url = "' . $pin_images_url .'";';
  		echo 'var pinImages = ' . $pinImages .';';
